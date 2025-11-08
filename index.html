@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>🎉 Birthday Blast!</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js" defer></script>
+  <script src="script.js" defer></script>
+</head>
+<body data-page="merged">
+  <!-- Marquee -->
+  <div class="marquee">
+    <div class="marquee__inner">
+      <span>🎂 Happy Birthday Gudiyaa! 🎈 Make a wish! 🎉 Time to celebrate! 💖</span>
+      <span>🎂 Happy Birthday Gudiyaa! 🎈 Make a wish! 🎉 Time to celebrate! 💖</span>
+      <span>🎂 Happy Birthday Gudiyaa! 🎈 Make a wish! 🎉 Time to celebrate! 💖</span>
+    </div>
+  </div>
+
+  <!-- FX layers -->
+  <canvas id="fireworks" class="fx fireworks"></canvas>
+  <div class="fx twinkles"></div>
+  <div class="fx emoji-rain" aria-hidden="true"></div>
+
+  <main class="wrap">
+    <!-- COUNTDOWN -->
+    <section id="countdownStage" class="stage">
+      <div class="center">
+        <div class="ring" id="ring"><div class="num" id="num">3</div></div>
+        <p class="caption">Crafting your special moment...</p>
+      </div>
+    </section>
+
+    <!-- SURPRISE FLOW -->
+    <section id="surpriseSection" class="hidden">
+      <!-- hero -->
+      <header class="header stage" id="heroStage">
+        <img src="images/panda.png" alt="" class="panda" onerror="this.style.display='none'"/>
+        <h1 class="hero-title">A Cutiepie was born today, <span id="age">23</span> years ago!</h1>
+        <p class="sub">Yes, <span id="nameHero">you</span>! A little surprise awaits...</p>
+        <button id="startBtn" class="btn neon">🎁 Start the surprise</button>
+      </header>
+
+      <!-- cake -->
+      <section id="cakeStage" class="stage hidden">
+        <div class="bunting"></div>
+        <div class="cake-wrap">
+          <img src="images/cake.png" alt="Cake" class="cake-img" onerror="this.classList.add('cake-fallback')"/>
+        </div>
+        <button id="decorateBtn" class="btn pink">🖌️ Decorate</button>
+      </section>
+
+      <!-- decorate -->
+      <section id="decorateStage" class="stage hidden">
+        <div class="bunting"></div>
+        <div class="cake-wrap">
+          <img src="images/cake.png" alt="Cake" class="cake-img"/>
+        </div>
+        <button id="lightBtn" class="btn pink">🕯️ Light the Candle</button>
+      </section>
+
+      <!-- lit -->
+      <section id="litStage" class="stage hidden">
+        <div class="bunting"></div>
+        <div class="cake-wrap">
+          <img src="images/cake.png" alt="Cake" class="cake-img"/>
+          <div class="candle-lit" aria-hidden="true"></div>
+        </div>
+        <h2 class="wish">Happy Birthday, <span id="nameWish">Madam Ji</span>!</h2>
+      </section>
+
+      <!-- party -->
+      <section id="partyStage" class="stage hidden">
+        <div class="bunting"></div>
+        <div class="cake-wrap">
+          <img src="images/cake.png" alt="Cake" class="cake-img"/>
+          <div class="candle-lit" aria-hidden="true"></div>
+        </div>
+        <button id="popBalloonsBtn" class="btn pink">🎈 Pop the Balloons ➜</button>
+      </section>
+
+      <!-- balloons (full-screen) -->
+      <section id="balloonStage" class="stage hidden balloons-stage">
+        <div id="balloonContainer" class="balloon-container" aria-live="polite"></div>
+
+        <!-- Final image + hint (opens album) -->
+        <div id="revealWrap" class="reveal-wrap hidden">
+          <div id="tapHint" class="tap-hint hidden">Tap to view</div>
+          <img id="afterImage" src="images/pabhmd.png" alt="Surprise message" class="after-image hidden" />
+        </div>
+      </section>
+    </section>
+
+    <div class="subtle-hearts" aria-hidden="true"></div>
+  </main>
+
+  <!-- Audio -->
+  <audio id="balloonSound" src="sounds/balloon.mp3" preload="auto"></audio>
+  <audio id="popperSound" src="sounds/party_popper.m4a" preload="auto"></audio>
+  <audio id="countdownSound" src="sounds/countdown.m4a" preload="auto"></audio>
+  <!-- song starts after video completes -->
+  <audio id="albumSong" src="sounds/gallery_song.mp3" preload="auto" loop></audio>
+
+  <!-- Album Modal -->
+  <div id="albumModal" class="album-modal hidden" role="dialog" aria-modal="true" aria-label="Photo album">
+    <div class="album-inner">
+      <button id="albumClose" class="album-close" aria-label="Close album">✕</button>
+      <div class="album-bunting"></div>
+      <h2 class="album-title">Recap Our Crazy Memories 🤪🤓🤨</h2>
+      <p class="album-sub" id="albumHint">Your slideshow will start now…</p>
+
+      <!-- Video first (letterboxed, full video, with audio control) -->
+      <div id="videoWrap" class="video-wrap">
+        <div class="video-letterbox">
+          <video id="albumVideo"
+                 class="album-video"
+                 src="videos/album.mp4"
+                 preload="metadata"
+                 playsinline
+                 controlslist="nodownload noplaybackrate"
+                 muted
+                 autoplay>
+          </video>
+        </div>
+
+        <!-- Autoplay fallback -->
+        <button id="playVideoBtn" class="video-play-btn hidden">▶ Play</button>
+
+      </div>
+
+      <!-- Viewer appears after video ends -->
+      <div class="viewer hidden" id="viewer">
+        <img id="cardImg" class="viewer-img" src="" alt="Album photo"/>
+      </div>
+
+      <!-- Buttons shown AFTER video ends -->
+      <div class="album-actions">
+        <button id="seeMsgBtnInAlbum" class="btn neon hidden">✉️ See my message</button>
+        <button id="replaySlideshowBtn" class="btn pink hidden">⟲ Replay slideshow</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Birthday Card Modal -->
+  <div id="cardModal" class="card-modal hidden" role="dialog" aria-modal="true" aria-label="Birthday card">
+    <div class="card-inner">
+      <button id="cardClose" class="album-close" aria-label="Close card">✕</button>
+      <div class="gcard" id="gcard">
+        <div class="gcard-front">
+          <div class="gcard-title">Happy Birthday! 🎂</div>
+        </div>
+        <div class="gcard-inside">
+          <h3>To my favorite human,</h3>
+          <p id="typedText" class="typed"></p>
+          <p class="sign">— With lots of love</p>
+          <button id="replayBtn" class="btn neon card-replay hidden">⟲ Replay</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
